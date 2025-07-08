@@ -3,6 +3,8 @@ from sqlalchemy import Integer, func
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncAttrs
 from sqlalchemy.orm import DeclarativeBase, declared_attr, Mapped, mapped_column
 from src.core.config import settings
+from typing import AsyncGenerator
+from fastapi import Depends
 
 DATABASE_URL = settings.get_db_url()
 
@@ -18,3 +20,8 @@ class Base(AsyncAttrs, DeclarativeBase):
     @declared_attr.directive
     def __tablename__(cls) -> str:
         return cls.__name__.lower() + 's'
+    
+
+async def get_async_session() -> AsyncGenerator:
+    async with async_session_maker() as session:
+        yield session
