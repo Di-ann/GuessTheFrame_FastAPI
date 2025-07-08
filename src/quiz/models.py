@@ -4,6 +4,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from src.database import Base
 from sqlalchemy import Enum as SQLEnum
 import enum
+from src.auth.models import User
 
 class MediaType(str, enum.Enum):
     MOVIE = "movie"
