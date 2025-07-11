@@ -1,23 +1,14 @@
-from fastapi import APIRouter, Request, UploadFile, Form
-from fastapi.responses import RedirectResponse
+from fastapi import APIRouter, UploadFile, Form, HTTPException
+from fastapi.responses import JSONResponse
 import shutil
 import os
-from fastapi.templating import Jinja2Templates
 from src.database import async_session_maker
 from src.quiz.models import MediaItem, MediaType
 
-router = APIRouter()
-templates = Jinja2Templates(directory="src/templates")
-UPLOAD_DIR = "/static/images"
+router = APIRouter(prefix="/admin", tags=["Admin"])
 
-@router.get("/admin/upload")
-async def get_upload_form(request: Request):
-    return templates.TemplateResponse("upload_frame.html", {"request": request})
-
-
-
-@router.post("/admin/upload")
-async def upload_frame(
+@router.post("/upload")
+async def upload_frame_api(
     title: str = Form(...),
     type: str = Form(...),
     genre: str = Form(None),
@@ -26,7 +17,7 @@ async def upload_frame(
 ):
     UPLOAD_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "static", "images"))
     os.makedirs(UPLOAD_DIR, exist_ok=True)
-    
+
     filename = file.filename
     save_path = os.path.join(UPLOAD_DIR, filename)
     with open(save_path, "wb") as buffer:
@@ -43,4 +34,4 @@ async def upload_frame(
         session.add(item)
         await session.commit()
 
-    return RedirectResponse("/admin/upload", status_code=303)
+    return JSONResponse(status_code=201, content={"message": "Кадр успешно добавлен"})

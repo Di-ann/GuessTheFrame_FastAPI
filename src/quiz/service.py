@@ -3,6 +3,7 @@ from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.quiz.models import MediaItem
 
+BASE_URL = "http://localhost:8000"
 
 async def get_quiz_question(session: AsyncSession) -> dict:
     count_result = await session.execute(
@@ -41,6 +42,6 @@ async def get_quiz_question(session: AsyncSession) -> dict:
 
     return {
         "media_item_id": selected_item.id,
-        "image_url": selected_item.image_url,
+        "image_url": BASE_URL + selected_item.image_url,
         "options": options
     }
